@@ -14,7 +14,7 @@ const historicalEvents = [
         year: -2560,
         coords: [29.9792, 31.1342],
         description: "Se completa la tumba del faraón Keops.",
-        imageUrl: "https://images.unsplash.com/photo-1604028054045-81a1796d426a?w=320"
+        imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Kheops-Pyramid.jpg/320px-Kheops-Pyramid.jpg"
     },
     {
         id: 2,
@@ -22,7 +22,7 @@ const historicalEvents = [
         year: 1453,
         coords: [41.0082, 28.9784],
         description: "El Imperio Otomano captura la capital bizantina.",
-        imageUrl: "https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?w=320"
+        imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/The_conquest_of_Constantinople_by_the_Turks_2.jpg/320px-The_conquest_of_Constantinople_by_the_Turks_2.jpg"
     },
     {
         id: 3,
@@ -30,7 +30,7 @@ const historicalEvents = [
         year: 1769,
         coords: [55.8642, -4.2518],
         description: "James Watt patenta mejoras a la máquina de vapor, impulsando la Revolución Industrial.",
-        imageUrl: "https://images.unsplash.com/photo-1577903823485-2e650ea0b0de?w=320"
+        imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Watt_steam_engine.jpg/320px-Watt_steam_engine.jpg"
     }
 ];
 
@@ -51,27 +51,21 @@ function updateMapByYear(selectedYear) {
         return event.year >= selectedYear - 50 && event.year <= selectedYear + 50;
     });
 
-    activeEvents.forEach(event => {
+  activeEvents.forEach(event => {
         const marker = L.circleMarker(event.coords, {
-            radius: 9,
-            fillColor: "#e74c3c",
-            color: "#fff",
-            weight: 2,
-            opacity: 1,
-            fillOpacity: 0.9
+            radius: 9, fillColor: "#e74c3c", color: "#fff", weight: 2, opacity: 1, fillOpacity: 0.9
         });
 
-        // Aplicamos referrerpolicy="no-referrer" para que el servidor local no bloquee las imágenes externas
+        // La etiqueta referrerpolicy="no-referrer" asegura que Wikipedia no bloquee la imagen
         let popupContent = `
             <h3>${event.title} (${event.year < 0 ? Math.abs(event.year) + ' a.C.' : event.year + ' d.C.'})</h3>
-            <img src="${event.imageUrl}" alt="${event.title}" referrerpolicy="no-referrer" onerror="this.onerror=null;this.src='https://via.placeholder.com/280x180.png?text=Error';">
+            <img src="${event.imageUrl}" alt="${event.title}" referrerpolicy="no-referrer">
             <p>${event.description}</p>
         `;
 
         marker.bindPopup(popupContent);
         currentMarkers.addLayer(marker);
     });
-
     if (typeof fronterasHistoricas !== 'undefined') {
         const activeBordersData = {
             "type": "FeatureCollection",
