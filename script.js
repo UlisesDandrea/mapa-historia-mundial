@@ -14,7 +14,8 @@ const historicalEvents = [
         year: -2560,
         coords: [29.9792, 31.1342],
         description: "Se completa la tumba del faraón Keops.",
-        imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Kheops-Pyramid.jpg/320px-Kheops-Pyramid.jpg"
+        // Usamos un CDN público (wsrv.nl) que elimina todos los bloqueos de seguridad
+        imageUrl: "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Kheops-Pyramid.jpg/320px-Kheops-Pyramid.jpg"
     },
     {
         id: 2,
@@ -22,7 +23,7 @@ const historicalEvents = [
         year: 1453,
         coords: [41.0082, 28.9784],
         description: "El Imperio Otomano captura la capital bizantina.",
-        imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/The_conquest_of_Constantinople_by_the_Turks_2.jpg/320px-The_conquest_of_Constantinople_by_the_Turks_2.jpg"
+        imageUrl: "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/d/d4/The_conquest_of_Constantinople_by_the_Turks_2.jpg/320px-The_conquest_of_Constantinople_by_the_Turks_2.jpg"
     },
     {
         id: 3,
@@ -30,7 +31,7 @@ const historicalEvents = [
         year: 1769,
         coords: [55.8642, -4.2518],
         description: "James Watt patenta mejoras a la máquina de vapor, impulsando la Revolución Industrial.",
-        imageUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Watt_steam_engine.jpg/320px-Watt_steam_engine.jpg"
+        imageUrl: "https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/5/52/Watt_steam_engine.jpg/320px-Watt_steam_engine.jpg"
     }
 ];
 
@@ -51,21 +52,22 @@ function updateMapByYear(selectedYear) {
         return event.year >= selectedYear - 50 && event.year <= selectedYear + 50;
     });
 
-  activeEvents.forEach(event => {
+    activeEvents.forEach(event => {
         const marker = L.circleMarker(event.coords, {
             radius: 9, fillColor: "#e74c3c", color: "#fff", weight: 2, opacity: 1, fillOpacity: 0.9
         });
 
-        // La etiqueta referrerpolicy="no-referrer" asegura que Wikipedia no bloquee la imagen
+        // El popup ya no necesita etiquetas raras, la imagen entra limpia por el CDN
         let popupContent = `
             <h3>${event.title} (${event.year < 0 ? Math.abs(event.year) + ' a.C.' : event.year + ' d.C.'})</h3>
-            <img src="${event.imageUrl}" alt="${event.title}" referrerpolicy="no-referrer">
+            <img src="${event.imageUrl}" alt="${event.title}">
             <p>${event.description}</p>
         `;
 
         marker.bindPopup(popupContent);
         currentMarkers.addLayer(marker);
     });
+
     if (typeof fronterasHistoricas !== 'undefined') {
         const activeBordersData = {
             "type": "FeatureCollection",
@@ -76,14 +78,7 @@ function updateMapByYear(selectedYear) {
 
         L.geoJSON(activeBordersData, {
             style: function (feature) {
-                return {
-                    fillColor: feature.properties.color,
-                    weight: 1,
-                    opacity: 1,
-                    color: '#fff',
-                    dashArray: '3',
-                    fillOpacity: 0.5
-                };
+                return { fillColor: feature.properties.color, weight: 1, color: '#fff', dashArray: '3', fillOpacity: 0.5 };
             },
             onEachFeature: function (feature, layer) {
                 layer.bindPopup(`<strong>${feature.properties.nombre}</strong><br>
@@ -98,5 +93,4 @@ yearSlider.addEventListener('input', (e) => {
     updateMapByYear(parseInt(e.target.value));
 });
 
-// Inicialización
 updateMapByYear(parseInt(yearSlider.value));
